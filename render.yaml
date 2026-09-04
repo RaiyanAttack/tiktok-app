@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: tiktok-media-downloader
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
