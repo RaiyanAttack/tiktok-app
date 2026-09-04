@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TikTok Media Downloader</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b0b0d;color:#fff;font-family:Arial;padding:20px}
+.app{max-width:520px;margin:30px auto}.card{background:#17171b;border:1px solid #303037;border-radius:20px;padding:22px;margin-bottom:16px}
+h1{margin:0 0 8px}.muted{color:#999}.logo b{color:#ff2d55}.logo i{color:#25f4ee;font-style:normal}
+input,select{width:100%;padding:14px;margin:8px 0 14px;border-radius:12px;border:1px solid #444;background:#0f0f11;color:#fff}
+button{width:100%;padding:14px;border:0;border-radius:12px;background:#ff2d55;color:white;font-weight:700;font-size:16px}
+#status{margin-top:14px;color:#aaa}.preview{display:none;margin-top:18px}.preview img{width:100%;border-radius:14px}
+a{display:block;text-align:center;margin-top:12px;padding:14px;border-radius:12px;background:#25f4ee;color:#000;text-decoration:none;font-weight:700}
+small{display:block;color:#777;line-height:1.5;margin-top:15px}
+</style>
+</head>
+<body><div class="app">
+<div class="card">
+<h1 class="logo"><i>Tik</i><b>Tok</b> Media Downloader</h1>
+<p class="muted">Video quality + photo download</p>
+<input id="url" placeholder="TikTok URL">
+<select id="quality"><option value="ultra">Ultra HD</option><option value="1080">1080p</option><option value="780">780p</option><option value="hd">HD</option></select>
+<button onclick="downloadMedia()">Download</button><div id="status">URL paste করে Download চাপুন।</div>
+<div class="preview" id="preview"><img id="thumb"><a id="save" download>Save Media</a></div>
+<small>শুধু নিজের বা অনুমোদিত content-এর জন্য ব্যবহার করুন।</small>
+</div></div>
+<script>
+const API_BASE=""; // Render deploy করার পর এখানে backend URL বসান
+async function downloadMedia(){
+ const url=document.getElementById("url").value.trim(), quality=document.getElementById("quality").value;
+ const s=document.getElementById("status"), p=document.getElementById("preview");
+ if(!url){s.textContent="⚠️ TikTok URL দিন।";return}
+ s.textContent="⏳ Processing...";
+ try{
+  const r=await fetch(API_BASE+"/api/download",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url,quality})});
+  const d=await r.json(); if(!r.ok||!d.success) throw new Error(d.message||"Download failed");
+  document.getElementById("thumb").src=d.thumbnail||"";
+  document.getElementById("thumb").style.display=d.thumbnail?"block":"none";
+  document.getElementById("save").href=d.download_url; p.style.display="block"; s.textContent="✅ Ready!";
+ }catch(e){s.textContent="❌ "+e.message}
+}
+</script></body></html>
